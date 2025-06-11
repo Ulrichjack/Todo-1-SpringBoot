@@ -17,7 +17,7 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
 # Expose le port 8081
-EXPOSE 8080
+EXPOSE $PORT
 
 # Variables d'environnement pour optimiser la JVM
 ENV JAVA_OPTS="-Xmx512m -Xms256m"
