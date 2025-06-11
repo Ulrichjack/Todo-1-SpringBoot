@@ -1,11 +1,20 @@
-# Utilise une image Java 17
-FROM openjdk:17-jdk-slim
-
-# Crée un répertoire de travail
+# Étape 1: Build avec Maven
+FROM maven:3.8.4-openjdk-17-slim AS build
 WORKDIR /app
 
-# Copie le fichier JAR généré (ajustez le nom si nécessaire)
-COPY target/*.jar app.jar
+# Copie les fichiers de configuration Maven
+COPY pom.xml .
+COPY src ./src
+
+# Compile et package l'application (sans les tests pour aller plus vite)
+RUN mvn clean package -DskipTests
+
+# Étape 2: Image finale légère avec seulement le JAR
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+
+# Copie le JAR compilé depuis l'étape de build
+COPY --from=build /app/target/*.jar app.jar
 
 # Expose le port 8081
 EXPOSE 8081
